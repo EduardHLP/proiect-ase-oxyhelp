@@ -85,9 +85,9 @@ strong, b { font-weight: 600; }
 .top__logo { display: block; flex: none; }
 .top__logo img { height: 30px; width: auto; }
 .top__nav { margin-left: auto; display: flex; align-items: center; gap: clamp(16px, 2.2vw, 34px); }
-.top__nav a { font-size: var(--t-body); text-decoration: none; padding: 10px 0; position: relative; }
-.top__nav a::after { content: ""; position: absolute; left: 0; right: 0; bottom: 4px; height: 2px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform .35s var(--ease); }
-.top__nav a:hover::after, .top__nav a[aria-current="page"]::after { transform: scaleX(1); }
+.top__nav a:not(.btn) { font-size: var(--t-body); text-decoration: none; padding: 10px 0; position: relative; }
+.top__nav a:not(.btn)::after { content: ""; position: absolute; left: 0; right: 0; bottom: 4px; height: 2px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform .35s var(--ease); }
+.top__nav a:not(.btn):hover::after, .top__nav a[aria-current="page"]::after { transform: scaleX(1); }
 .lang { display: inline-flex; background: var(--paper-lo); border-radius: 999px; padding: 4px; }
 .lang button { border: 0; background: transparent; color: var(--ink); font: 500 .8125rem/1 var(--mono); letter-spacing: .04em; padding: 10px 12px; border-radius: 999px; cursor: pointer; min-width: 44px; min-height: 36px; }
 .lang button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
@@ -102,7 +102,7 @@ strong, b { font-weight: 600; }
   .menu-btn { display: inline-flex; margin-left: auto; align-items: center; min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: var(--ink); color: var(--paper); font: 500 .8125rem/1 var(--mono); letter-spacing: .04em; text-transform: uppercase; cursor: pointer; }
   .top--over .menu-btn { background: var(--paper-hi); color: var(--ink); }
   .top__nav { display: none; position: fixed; inset: 0; z-index: 30; margin: 0; padding: 96px var(--m) 32px; background: var(--ink); color: var(--paper); flex-direction: column; align-items: flex-start; gap: 4px; overflow-y: auto; }
-  .top__nav a { font-size: 2.25rem; letter-spacing: -0.03em; padding: 6px 0; }
+  .top__nav a:not(.btn) { font-size: 2.25rem; letter-spacing: -0.03em; padding: 6px 0; }
   .top__nav .lang { margin-top: 24px; background: var(--ink-2); }
   .top__nav .lang button { color: var(--paper); }
   .top__nav .lang button[aria-pressed="true"] { background: var(--paper); color: var(--ink); }
