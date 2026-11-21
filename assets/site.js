@@ -155,3 +155,75 @@
   draw();
   document.addEventListener('langchange', draw);
 })();
+
+/* ----- animații: progres, paralaxă, cifre care urcă, lumină pe carduri ----- */
+(function () {
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var bar = document.createElement('div'); bar.className = 'progress'; bar.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(bar);
+  var hero = document.querySelector('.hero__pic');
+  var pars = [].slice.call(document.querySelectorAll('.fig img'));
+  var tick = false;
+  function onScroll() {
+    if (tick) return; tick = true;
+    requestAnimationFrame(function () {
+      tick = false;
+      var y = window.scrollY, max = document.documentElement.scrollHeight - innerHeight;
+      bar.style.setProperty('--p', max > 0 ? (y / max).toFixed(4) : 0);
+      if (reduce) return;
+      if (hero && y < innerHeight * 1.2) hero.style.translate = '0 ' + (y * 0.28).toFixed(1) + 'px';
+      pars.forEach(function (im) {
+        var r = im.parentElement.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > innerHeight) return;
+        var t = (r.top + r.height / 2 - innerHeight / 2) / innerHeight;
+        im.style.translate = '0 ' + (t * -70).toFixed(1) + 'px';
+      });
+    });
+  }
+  addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+  /* cifre care urcă: păstrează formatul (puncte, +) */
+  var nums = [].slice.call(document.querySelectorAll('.fig__n, .figs b'));
+  function count(el) {
+    var txt = el.textContent, target = parseInt(txt.replace(/\D/g, ''), 10), suffix = txt.replace(/[\d.\s]/g, '');
+    if (!target || reduce) return;
+    var t0 = performance.now(), dur = 1700;
+    (function step(now) {
+      var k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 4);
+      el.textContent = Math.round(target * e).toLocaleString('de-DE') + suffix;
+      if (k < 1) requestAnimationFrame(step); else el.textContent = txt;
+    })(t0);
+  }
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (en) { if (en.isIntersecting) { count(en.target); io.unobserve(en.target); } });
+    }, { threshold: 0.6 });
+    nums.forEach(function (n) { io.observe(n); });
+  }
+
+  /* lumină care urmărește cursorul */
+  [].forEach.call(document.querySelectorAll('.model, .figs > div, .cal__m, .reply__card, .foot__card, .field .qs li'), function (c) {
+    c.classList.add('glow');
+    c.addEventListener('pointermove', function (e) {
+      var r = c.getBoundingClientRect();
+      c.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      c.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+  });
+
+  /* calendar: zilele marcate apar pe rând */
+  function stagger() { [].forEach.call(document.querySelectorAll('.cal__g button'), function (b, i) { b.style.setProperty('--d', i); }); }
+  stagger(); document.addEventListener('langchange', function () { setTimeout(stagger, 0); });
+
+  /* carusel: fotografia curentă iese în față */
+  [].forEach.call(document.querySelectorAll('.car'), function (car) {
+    var track = car.querySelector('.car__track'), count = car.querySelector('.car__count');
+    function mark() {
+      var cur = parseInt((count.textContent || '1').split('/')[0], 10) - 1;
+      [].forEach.call(track.children, function (s, i) { s.classList.toggle('is-cur', i === cur); });
+    }
+    track.addEventListener('scroll', function () { setTimeout(mark, 0); }, { passive: true });
+    mark();
+  });
+})();
